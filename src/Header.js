@@ -24,8 +24,8 @@ const ImgContainer = styled.img`
 
 export function Header(){
     return <HeaderContainer>
-           <ImgContainer src="https://www.mybites.io/wp-content/themes/bites/assets/img/svg/logo.svg" data-src="https://www.mybites.io/wp-content/themes/bites/assets/img/svg/logo.svg"
-            ></ImgContainer>
+           <ImgContainer src="https://www.mybites.io/wp-content/themes/bites/assets/img/svg/logo.svg"
+           ></ImgContainer>
             JSON Path Evaluator
         </HeaderContainer>
 
