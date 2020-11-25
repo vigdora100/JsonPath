@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from "styled-components";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-json";
@@ -8,37 +8,31 @@ import { updateJson, updateJsonPath }  from './actions';
 import jp from 'jsonpath'
 
 const Container = styled.div`
-
 `;
 
-class AceContainer extends React.Component {
-
-    constructor(props, context) {
-        super(props, context);
-    }
-
-    onChange = (newValue)  => {
-        const { updateJson,updateJsonPath,query } =  this.props
-        let json = null
-        try {
-             json = JSON.parse(newValue);
-             updateJson(json)
-             const queryAns = jp.query(json, query)
-             updateJsonPath(queryAns)
-        } catch (e) {
-            switch(e.name){
-            case 'SyntaxError':
-                updateJsonPath('json is not Valid') 
-                break;                       
-            default:
-                updateJsonPath('query not valid or empty') 
-            }
+function onChange(props,newValue){
+    const { updateJson,updateJsonPath,query } =  props
+    let json = null
+    try {
+         json = JSON.parse(newValue);
+         updateJson(json)
+         const queryAns = jp.query(json, query)
+         updateJsonPath(queryAns)
+    } catch (e) {
+        switch(e.name){
+        case 'SyntaxError':
+            updateJsonPath('json is not Valid') 
+            break;                       
+        default:
+            updateJsonPath('query not valid or empty') 
         }
     }
+}
 
-    render() {
-        const { value, title } =   this.props
-        return (
+    function AceContainer(props) {
+  
+    const { value, title } =  props
+    return (
             <Container>
                 <h1> { title }</h1>
                 <AceEditor
@@ -47,7 +41,7 @@ class AceContainer extends React.Component {
                     height="600px"
                     mode="plain_text"
                     theme="monokai"
-                    onChange={this.onChange}
+                    onChange={onChange.bind(null,props)}
                     name="UNIQUE_ID_OF_DIV"
                     editorProps={{
                         $blockScrolling: true
@@ -58,7 +52,6 @@ class AceContainer extends React.Component {
                 />
            </Container>   
         );
-    }
 }
 
 const mapDispatchToProps = {

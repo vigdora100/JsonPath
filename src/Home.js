@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from 'react';
 import styled from "styled-components";
 import AceContainer from './AceContainer'
 import 'antd/dist/antd.css';
@@ -6,7 +6,6 @@ import { Input } from 'antd';
 import jp from 'jsonpath'
 import { updateQuery, updateJsonPath } from './actions'
 import { connect } from 'react-redux'
-import { isEqual } from 'lodash'
 
 const AceEditors = styled.div`
     display: flex;
@@ -22,38 +21,39 @@ const HomeContainer = styled.div`
     justify-content: space-between;
 `;
 
-class Home extends React.Component {
+function Home(props){
 
-    componentDidUpdate(prevProps) {
-        const { updateJsonPath, json, query } = this.props
-        if (!isEqual(prevProps.query, query)) {
+    useEffect(() => 
+            { 
+                console.log('effecting')
+                const { updateJsonPath, json, query } = props
             try{
                 const queryAns = jp.query(json, query)
                 updateJsonPath(queryAns)
             }catch(e){
                 updateJsonPath('query not valid or empty')
-            }
-      }
-    }
+            }}
+  , [props.query]);
 
-    onJsonPathChange = (e) => {
-        const { updateQuery } = this.props
+
+    const onJsonPathChange = (e) => {
+        const { updateQuery } = props
         updateQuery(e.target.value)
     }
+    
+    const { jsonPathResult }  = props
 
-    render() {
-        const { jsonPathResult }  = this.props
-        return (
+    return (
             <HomeContainer>
                 <h1>Add query here:</h1>
-                <Input onChange={this.onJsonPathChange}></Input>
+                <Input onChange={onJsonPathChange}></Input>
                 <AceEditors>
                     <AceContainer title={'Add JSON here:'}></AceContainer>
                         <AceContainer value={jsonPathResult} title={'Result:'}></AceContainer>
                 </AceEditors>
             </HomeContainer>
         );
-    }
+
 }
 
     const mapStateToProps = (state) => {
@@ -69,7 +69,6 @@ class Home extends React.Component {
         updateJsonPath: updateJsonPath
     } 
     
-   
     export default connect(mapStateToProps,mapDispatchToProps)(Home)
 
 
