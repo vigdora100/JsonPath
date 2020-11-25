@@ -4,7 +4,7 @@ import AceContainer from './AceContainer'
 import 'antd/dist/antd.css';
 import { Input } from 'antd';
 import jp from 'jsonpath'
-import { updateJsonPath } from './actions'
+import { updateQuery, updateJsonPath } from './actions'
 import { connect } from 'react-redux'
 import { isEqual } from 'lodash'
 
@@ -23,43 +23,32 @@ const HomeContainer = styled.div`
 `;
 
 class Home extends React.Component {
-    
-    constructor(props, context) {
-        super(props, context);
-        this.state = { jsonPathQuery: '' }
+
+    componentDidUpdate(prevProps) {
+        const { updateJsonPath, json, query } = this.props
+        if (!isEqual(prevProps.query, query)) {
+            try{
+                const queryAns = jp.query(json, query)
+                updateJsonPath(queryAns)
+            }catch(e){
+                updateJsonPath('query not valid or empty')
+            }
+      }
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        const { jsonPathQuery } = this.state
-        const { updateJsonPath, json } = this.props
-        if (!isEqual(json, prevProps.json) || !isEqual(prevState.jsonPathQuery, jsonPathQuery)) {
-            if(json.isValid && jsonPathQuery){
-            const queryAns = jp.query(this.props.json, jsonPathQuery)
-            updateJsonPath(queryAns)
-            }
-            else{
-              if(!json.isValid){
-               updateJsonPath('not a json format')
-              }
-              if(!jsonPathQuery){
-                updateJsonPath('query is empty')
-              }
-            }
-        }
-      }
-
     onJsonPathChange = (e) => {
-            this.setState({jsonPathQuery: e.target.value})
+        const { updateQuery } = this.props
+        updateQuery(e.target.value)
     }
 
     render() {
-        const { jsonPathResult, json }  = this.props
+        const { jsonPathResult }  = this.props
         return (
             <HomeContainer>
                 <h1>Add query here:</h1>
                 <Input onChange={this.onJsonPathChange}></Input>
                 <AceEditors>
-                    <AceContainer value={json.value} title={'Add JSON here:'}></AceContainer>
+                    <AceContainer title={'Add JSON here:'}></AceContainer>
                         <AceContainer value={jsonPathResult} title={'Result:'}></AceContainer>
                 </AceEditors>
             </HomeContainer>
@@ -67,17 +56,19 @@ class Home extends React.Component {
     }
 }
 
-
-    const mapDispatchToProps = {
-        updateJsonPath: updateJsonPath
-    } 
-
     const mapStateToProps = (state) => {
         return  {
             json : state.json,
-            jsonPathResult: state.jsonPathResult
+            jsonPathResult: state.jsonPathResult,
+            query: state.query,
          }
      }
+
+     const mapDispatchToProps = {
+        updateQuery: updateQuery,
+        updateJsonPath: updateJsonPath
+    } 
+    
    
     export default connect(mapStateToProps,mapDispatchToProps)(Home)
 

@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from 'react';
 import styled from "styled-components";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
 import { connect } from 'react-redux'
 import { updateJson, updateJsonPath }  from './actions';
-
+import jp from 'jsonpath'
 
 const Container = styled.div`
 
@@ -18,13 +18,21 @@ class AceContainer extends React.Component {
     }
 
     onChange = (newValue)  => {
-        const { updateJson,updateJsonPath } =  this.props
+        const { updateJson,updateJsonPath,query } =  this.props
         let json = null
         try {
              json = JSON.parse(newValue);
-             updateJson(json, true)
+             updateJson(json)
+             const queryAns = jp.query(json, query)
+             updateJsonPath(queryAns)
         } catch (e) {
-            updateJsonPath('json is not Valid')                        
+            switch(e.name){
+            case 'SyntaxError':
+                updateJsonPath('json is not Valid') 
+                break;                       
+            default:
+                updateJsonPath('query not valid or empty') 
+            }
         }
     }
 
@@ -58,7 +66,13 @@ const mapDispatchToProps = {
     updateJsonPath: updateJsonPath
 } 
 
-export default connect(null,mapDispatchToProps)(AceContainer)
+const mapStateToProps = (state) => {
+    return  {
+        query : state.query,
+     }
+ }
+
+export default connect(mapStateToProps,mapDispatchToProps)(AceContainer)
 
 
 
