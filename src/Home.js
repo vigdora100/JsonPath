@@ -21,32 +21,31 @@ const HomeContainer = styled.div`
     justify-content: space-between;
 `;
 
+function onJsonPathChange(props, e){
+    const { updateQuery } = props
+    updateQuery(e.target.value)
+}
+
 function Home(props){
 
     useEffect(() => 
             { 
-                console.log('effecting')
                 const { updateJsonPath, json, query } = props
-            try{
-                const queryAns = jp.query(json, query)
-                updateJsonPath(queryAns)
-            }catch(e){
-                updateJsonPath('query not valid or empty')
-            }}
-  , [props.query]);
+                try{
+                    const queryAns = jp.query(json, query)
+                    updateJsonPath(queryAns)
+                }catch(e){
+                    updateJsonPath('query not valid or empty')
+                }
+            }, [props.query]);
 
-
-    const onJsonPathChange = (e) => {
-        const { updateQuery } = props
-        updateQuery(e.target.value)
-    }
     
     const { jsonPathResult }  = props
 
     return (
             <HomeContainer>
                 <h1>Add query here:</h1>
-                <Input onChange={onJsonPathChange}></Input>
+                <Input onChange={onJsonPathChange.bind(null,props)}></Input>
                 <AceEditors>
                     <AceContainer title={'Add JSON here:'}></AceContainer>
                         <AceContainer value={jsonPathResult} title={'Result:'}></AceContainer>
