@@ -39,6 +39,7 @@ function onChange(props,newValue){
                     value={JSON.stringify(value,null,2)}
                     placeholder="Add Json here"
                     height="600px"
+                    width="650px"
                     mode="plain_text"
                     theme="monokai"
                     onChange={onChange.bind(null,props)}

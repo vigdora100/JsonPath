@@ -6,19 +6,23 @@ import { Input } from 'antd';
 import jp from 'jsonpath'
 import { updateQuery, updateJsonPath } from './actions'
 import { connect } from 'react-redux'
+import { Header } from './Header'
 
 const AceEditors = styled.div`
     display: flex;
     flex-direction: row;
-    margin: 50px;
+    margin: 15px 30px 15px 30px;
     justify-content: space-between;
 `;
 
 const HomeContainer = styled.div`
     display: flex;
     flex-direction: column;
-    margin: 50px;
     justify-content: space-between;
+`;
+
+const InputContainer = styled.div`
+    margin: 30px;
 `;
 
 function onJsonPathChange(props, e){
@@ -44,11 +48,14 @@ function Home(props){
 
     return (
             <HomeContainer>
-                <h1>Add query here:</h1>
-                <Input onChange={onJsonPathChange.bind(null,props)}></Input>
+                <Header/>
+                <InputContainer>
+                    <h1>Add query here:</h1>
+                    <Input onChange={onJsonPathChange.bind(null,props)}></Input>
+                </InputContainer>
                 <AceEditors>
                     <AceContainer title={'Add JSON here:'}></AceContainer>
-                        <AceContainer value={jsonPathResult} title={'Result:'}></AceContainer>
+                    <AceContainer value={jsonPathResult} title={'Result:'}></AceContainer>
                 </AceEditors>
             </HomeContainer>
         );
